@@ -1,0 +1,116 @@
+#include <stdio.h>
+
+
+#define TAMANHO_TABULEIRO 10
+#define TAMANHO_NAVIO 3
+#define AGUA 0
+#define NAVIO 3
+
+
+void inicializarTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiro[i][j] = AGUA;
+        }
+    }
+}
+
+
+void exibirTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    printf("  ");
+    for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+        printf("%2d ", j);
+    }
+    printf("\n");
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        printf("%2d ", i);
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            printf("%2d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+
+int ehPosicaoValida(int linha, int coluna, int orientacao) {
+    if (orientacao == 0) { // Horizontal
+        return (linha >= 0 && linha < TAMANHO_TABULEIRO &&
+                coluna >= 0 && coluna + TAMANHO_NAVIO <= TAMANHO_TABULEIRO);
+    } else { // Vertical
+        return (linha >= 0 && linha + TAMANHO_NAVIO <= TAMANHO_TABULEIRO &&
+                coluna >= 0 && coluna < TAMANHO_TABULEIRO);
+    }
+}
+
+
+int posicionarNavio(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO], int linha, int coluna, int orientacao) {
+    // 0 para horizontal, 1 para vertical
+    if (!ehPosicaoValida(linha, coluna, orientacao)) {
+        printf("Erro: Coordenadas ou orientacao invalidas. Navio fora dos limites do tabuleiro.\n");
+        return 0;
+    }
+
+    
+    for (int i = 0; i < TAMANHO_NAVIO; i++) {
+        if (orientacao == 0) { // Horizontal
+            if (tabuleiro[linha][coluna + i] != AGUA) {
+                printf("Erro: Sobreposicao de navios na posicao (%d, %d).\n", linha, coluna + i);
+                return 0;
+            }
+        } else { // Vertical
+            if (tabuleiro[linha + i][coluna] != AGUA) {
+                printf("Erro: Sobreposicao de navios na posicao (%d, %d).\n", linha + i, coluna);
+                return 0;
+            }
+        }
+    }
+    
+  
+    for (int i = 0; i < TAMANHO_NAVIO; i++) {
+        if (orientacao == 0) { // Horizontal
+            tabuleiro[linha][coluna + i] = NAVIO;
+        } else { // Vertical
+            tabuleiro[linha + i][coluna] = NAVIO;
+        }
+    }
+
+    return 1;
+}
+
+int main() {
+    
+    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+
+    
+    inicializarTabuleiro(tabuleiro);
+
+   
+    int linha_navio1 = 2;
+    int coluna_navio1 = 3;
+    
+    
+    int linha_navio2 = 5;
+    int coluna_navio2 = 7;
+
+    printf("Iniciando posicionamento dos navios...\n\n");
+
+    
+    if (posicionarNavio(tabuleiro, linha_navio1, coluna_navio1, 0)) {
+        printf("Navio horizontal posicionado com sucesso em (%d, %d).\n\n", linha_navio1, coluna_navio1);
+    } else {
+        printf("Falha ao posicionar o navio horizontal.\n\n");
+    }
+
+    
+    if (posicionarNavio(tabuleiro, linha_navio2, coluna_navio2, 1)) {
+        printf("Navio vertical posicionado com sucesso em (%d, %d).\n\n", linha_navio2, coluna_navio2);
+    } else {
+        printf("Falha ao posicionar o navio vertical.\n\n");
+    }
+    
+    printf("--- Tabuleiro Final ---\n");
+    // Exibe o tabuleiro com os navios posicionados
+    exibirTabuleiro(tabuleiro);
+    
+    return 0;
+}
